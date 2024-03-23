@@ -1,11 +1,21 @@
-const axios = require('axios');
+const express = require('express');
+const http = require('http');
+const socketlo = require('socket.io');
+const app = express();
+const server = http.createServer(app);
+const io = socketlo (server);
+io.on('connection', (socket) => {
+// Handle socket connection
+socket.on('message', (message) => {
+// Broadcast received message to all connected clients
+io.emit('message', message);
+});
+});
 
+server.listen(3000, () => {
+    console.log ('Server is running on http://localhost:3000');
+});
 
-axios.get('https://api.spotify.com/v1/search?q=lord+patawad&type=track', {
-    headers: {
-    'Authorization': 'Bearer BQB8AlammWBM4-iCss5oxexLkyhMz9TyMWUK3MeBbh1Urarn2zIzCYJgZ_wfUFSfrg5OFWWVZXuLCRHquVhiitbsAFXVSh_NroGabauxq-65-S4_tkiWljyTJkiad4oAEAuwjpdlQDdom84SakClNXEsftTnT7T6OJVLHUTnlI8dBfDKhbk3KM-YxTYFVG6przyDQDV5tbSP2JY'
-}
-}).then((data)=>{
-    console.log(data.data.tracks.items[0].id);
-})
-
+app.get('/', (req, res)=> {
+    res.sendFile(__dirname + '/index.html');
+});
